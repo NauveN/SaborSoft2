@@ -1,0 +1,51 @@
+﻿@page
+@model SaborSoft2.Pages.Usuarios.EditModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "_Layout";
+}
+
+<h1>Edit</h1>
+
+<h4>Usuario</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Usuario.Cedula" />
+            <div class="form-group">
+                <label asp-for="Usuario.Nombre" class="control-label"></label>
+                <input asp-for="Usuario.Nombre" class="form-control" />
+                <span asp-validation-for="Usuario.Nombre" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Usuario.CorreoElectronico" class="control-label"></label>
+                <input asp-for="Usuario.CorreoElectronico" class="form-control" />
+                <span asp-validation-for="Usuario.CorreoElectronico" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Usuario.FechaRegistro" class="control-label"></label>
+                <input asp-for="Usuario.FechaRegistro" class="form-control" />
+                <span asp-validation-for="Usuario.FechaRegistro" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Usuario.TipoUsuarioId" class="control-label"></label>
+                <select asp-for="Usuario.TipoUsuarioId" class="form-control" asp-items="ViewBag.TipoUsuarioId" ></select>
+                <span asp-validation-for="Usuario.TipoUsuarioId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="./Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

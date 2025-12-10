@@ -1,0 +1,49 @@
+﻿@page
+@model SaborSoft2.Pages.Mesas.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "_Layout";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Mesa[0].Cantidad)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Mesa[0].CodigoReservaNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Mesa[0].Disponibilidad)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Mesa) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Cantidad)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CodigoReservaNavigation.Codigo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Disponibilidad.DisponibilidadId)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,55 @@
+﻿@page
+@model SaborSoft2.Pages.Reservas.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "_Layout";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Reserva[0].Fecha)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Reserva[0].Cantidad)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Reserva[0].CedulaNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Reserva[0].TipoReserva)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Reserva) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Fecha)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Cantidad)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CedulaNavigation.Cedula)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TipoReserva.TipoReservaId)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Codigo">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.Codigo">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Codigo">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
