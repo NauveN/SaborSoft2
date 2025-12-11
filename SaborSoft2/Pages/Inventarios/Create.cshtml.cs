@@ -21,23 +21,24 @@ namespace SaborSoft2.Pages.Inventarios
         [BindProperty]
         public Inventario Inventario { get; set; } = new Inventario();
 
-        // Responsable (Administrador / Empleado)
+        // Responsable (empleado / administrador)
         [BindProperty]
         public string CedulaResponsable { get; set; } = string.Empty;
 
         public SelectList UsuariosSelectList { get; set; } = default!;
+        public SelectList MenusSelectList { get; set; } = default!;
 
         public async Task OnGetAsync()
         {
             if (Inventario.FechaAdquisicion == default)
                 Inventario.FechaAdquisicion = DateOnly.FromDateTime(DateTime.Today);
 
-            await CargarUsuariosAsync();
+            await CargarCombosAsync();
         }
 
-        private async Task CargarUsuariosAsync()
+        private async Task CargarCombosAsync()
         {
-            // Usuarios que NO son clientes (Administrador / Mesero / Empleado...)
+            // Usuarios no clientes (administrador / empleados)
             var usuarios = await _context.Usuarios
                 .Include(u => u.TipoUsuario)
                 .Where(u => u.TipoUsuario.TipoUsuario1 != "Cliente")
@@ -45,21 +46,30 @@ namespace SaborSoft2.Pages.Inventarios
                 .ToListAsync();
 
             UsuariosSelectList = new SelectList(usuarios, "Cedula", "Nombre");
+
+            // Productos del menú
+            var menus = await _context.Menus
+                .OrderBy(m => m.Descripcion)
+                .ToListAsync();
+
+            MenusSelectList = new SelectList(menus, "Codigo", "Descripcion");
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
-            await CargarUsuariosAsync();
+            await CargarCombosAsync();
 
-            // Quitamos validaciones automáticas de cosas que no vienen del form
+            // Quitamos validación automática de cosas que no vienen del form
             ModelState.Remove("Inventario.CedulaNavigation");
             ModelState.Remove("Inventario.CodigoMenuNavigation");
-            ModelState.Remove("Inventario.Cedula");   // la asignamos nosotros
+            ModelState.Remove("Inventario.Cedula");   // <-- AGREGA ESTA LÍNEA
 
             // VALIDACIONES MANUALES
-
             if (string.IsNullOrWhiteSpace(CedulaResponsable))
                 ModelState.AddModelError(nameof(CedulaResponsable), "Debe seleccionar un responsable.");
+
+            if (Inventario.CodigoMenu == 0)
+                ModelState.AddModelError("Inventario.CodigoMenu", "Debe seleccionar un producto del menú.");
 
             if (string.IsNullOrWhiteSpace(Inventario.Descripcion))
                 ModelState.AddModelError("Inventario.Descripcion", "El nombre del ingrediente es obligatorio.");
@@ -76,7 +86,7 @@ namespace SaborSoft2.Pages.Inventarios
             if (Inventario.StockMinimo < 0)
                 ModelState.AddModelError("Inventario.StockMinimo", "El stock mínimo no puede ser negativo.");
 
-            // Validar que no exista el mismo ingrediente (mismo nombre)
+            // Validar ingrediente duplicado por nombre
             bool existe = await _context.Inventarios
                 .AnyAsync(i => i.Descripcion == Inventario.Descripcion);
 
@@ -87,7 +97,7 @@ namespace SaborSoft2.Pages.Inventarios
             if (!ModelState.IsValid)
                 return Page();
 
-            // Asignamos el responsable
+            // Asignar responsable
             Inventario.Cedula = CedulaResponsable;
             Inventario.FechaActualizacion = DateTime.Now;
 

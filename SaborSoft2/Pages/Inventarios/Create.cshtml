@@ -14,12 +14,21 @@
                 <form method="post">
                     <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
-                    <h5 class="mb-3">Datos del ingrediente</h5>
+                    <h5 class="mb-3">Datos del ingrediente / producto</h5>
                     <div class="row g-3 mb-4">
                         <div class="col-md-6">
                             <label asp-for="Inventario.Descripcion" class="form-label">Ingrediente / Producto</label>
                             <input asp-for="Inventario.Descripcion" class="form-control" />
                             <span asp-validation-for="Inventario.Descripcion" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Inventario.CodigoMenu" class="form-label">Producto del menú</label>
+                            <select asp-for="Inventario.CodigoMenu" class="form-select"
+                                    asp-items="Model.MenusSelectList">
+                                <option value="0">-- Seleccione producto --</option>
+                            </select>
+                            <span asp-validation-for="Inventario.CodigoMenu" class="text-danger"></span>
                         </div>
 
                         <div class="col-md-3">
@@ -34,13 +43,13 @@
                             <span asp-validation-for="Inventario.UnidadMedida" class="text-danger"></span>
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label asp-for="Inventario.FechaAdquisicion" class="form-label">Fecha de adquisición</label>
                             <input asp-for="Inventario.FechaAdquisicion" class="form-control" type="date" />
                             <span asp-validation-for="Inventario.FechaAdquisicion" class="text-danger"></span>
                         </div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label asp-for="Inventario.StockMinimo" class="form-label">Stock mínimo</label>
                             <input asp-for="Inventario.StockMinimo" class="form-control" min="0" />
                             <span asp-validation-for="Inventario.StockMinimo" class="text-danger"></span>

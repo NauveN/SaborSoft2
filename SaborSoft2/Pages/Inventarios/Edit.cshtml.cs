@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -35,9 +34,10 @@ namespace SaborSoft2.Pages.Inventarios
 
         public async Task<IActionResult> OnPostAsync()
         {
-            // Quitar navegaciones
+            // Quitar navegaciones y campos que no vienen del formulario
             ModelState.Remove("Inventario.CedulaNavigation");
             ModelState.Remove("Inventario.CodigoMenuNavigation");
+            ModelState.Remove("Inventario.Cedula");
 
             if (Inventario.Stock < 0)
                 ModelState.AddModelError("Inventario.Stock", "La cantidad no puede ser negativa.");
@@ -48,17 +48,20 @@ namespace SaborSoft2.Pages.Inventarios
             if (!ModelState.IsValid)
                 return Page();
 
-            var invDb = await _context.Inventarios.FirstOrDefaultAsync(i => i.Codigo == Inventario.Codigo);
+            var invDb = await _context.Inventarios
+                .FirstOrDefaultAsync(i => i.Codigo == Inventario.Codigo);
+
             if (invDb == null)
                 return NotFound();
 
-            // Actualizar campos permitidos
+            // Actualizar solo campos editables
             invDb.Descripcion = Inventario.Descripcion;
             invDb.Stock = Inventario.Stock;
             invDb.UnidadMedida = Inventario.UnidadMedida;
             invDb.FechaAdquisicion = Inventario.FechaAdquisicion;
             invDb.StockMinimo = Inventario.StockMinimo;
             invDb.FechaActualizacion = DateTime.Now;
+            // NO tocamos invDb.Cedula (se mantiene el responsable original)
 
             await _context.SaveChangesAsync();
 
