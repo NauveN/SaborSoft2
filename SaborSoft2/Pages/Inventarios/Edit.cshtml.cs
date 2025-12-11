@@ -19,12 +19,17 @@ namespace SaborSoft2.Pages.Inventarios
         [BindProperty]
         public Inventario Inventario { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int? codigo, int? codigoMenu)
         {
-            if (id == null)
+            if (codigo == null || codigoMenu == null)
                 return NotFound();
 
-            var inv = await _context.Inventarios.FirstOrDefaultAsync(i => i.Codigo == id);
+            var inv = await _context.Inventarios
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i =>
+                    i.Codigo == codigo &&
+                    i.CodigoMenu == codigoMenu);
+
             if (inv == null)
                 return NotFound();
 
@@ -34,7 +39,7 @@ namespace SaborSoft2.Pages.Inventarios
 
         public async Task<IActionResult> OnPostAsync()
         {
-            // Quitar navegaciones y campos que no vienen del formulario
+            // Quitar cosas que no vienen del form
             ModelState.Remove("Inventario.CedulaNavigation");
             ModelState.Remove("Inventario.CodigoMenuNavigation");
             ModelState.Remove("Inventario.Cedula");
@@ -49,7 +54,9 @@ namespace SaborSoft2.Pages.Inventarios
                 return Page();
 
             var invDb = await _context.Inventarios
-                .FirstOrDefaultAsync(i => i.Codigo == Inventario.Codigo);
+                .FirstOrDefaultAsync(i =>
+                    i.Codigo == Inventario.Codigo &&
+                    i.CodigoMenu == Inventario.CodigoMenu);
 
             if (invDb == null)
                 return NotFound();
@@ -61,7 +68,7 @@ namespace SaborSoft2.Pages.Inventarios
             invDb.FechaAdquisicion = Inventario.FechaAdquisicion;
             invDb.StockMinimo = Inventario.StockMinimo;
             invDb.FechaActualizacion = DateTime.Now;
-            // NO tocamos invDb.Cedula (se mantiene el responsable original)
+            // OJO: no tocamos invDb.Cedula ni invDb.CodigoMenu
 
             await _context.SaveChangesAsync();
 

@@ -1,4 +1,4 @@
-﻿@page "{id:int}"
+﻿@page
 @model SaborSoft2.Pages.Inventarios.EditModel
 
 @{
@@ -13,7 +13,10 @@
             <div class="card-body">
                 <form method="post">
                     <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                    <!-- Clave compuesta -->
                     <input type="hidden" asp-for="Inventario.Codigo" />
+                    <input type="hidden" asp-for="Inventario.CodigoMenu" />
 
                     <div class="row g-3">
                         <div class="col-md-6">

@@ -69,11 +69,23 @@
                 <td>@item.FechaAdquisicion.ToString("dd/MM/yyyy")</td>
                 <td>@item.FechaActualizacion?.ToString("dd/MM/yyyy HH:mm")</td>
                 <td class="text-end">
-                    <a asp-page="Edit" asp-route-id="@item.Codigo" class="btn btn-sm btn-outline-primary">Editar</a>
-                    <a asp-page="Details" asp-route-id="@item.Codigo" class="btn btn-sm btn-outline-secondary">Detalles</a>
-                    <a asp-page="Delete" asp-route-id="@item.Codigo" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                    <a asp-page="Edit"
+                       asp-route-codigo="@item.Codigo"
+                       asp-route-codigoMenu="@item.CodigoMenu"
+                       class="btn btn-sm btn-outline-primary">Editar</a>
+
+                    <a asp-page="Details"
+                       asp-route-codigo="@item.Codigo"
+                       asp-route-codigoMenu="@item.CodigoMenu"
+                       class="btn btn-sm btn-outline-secondary">Detalles</a>
+
+                    <a asp-page="Delete"
+                       asp-route-codigo="@item.Codigo"
+                       asp-route-codigoMenu="@item.CodigoMenu"
+                       class="btn btn-sm btn-outline-danger">Eliminar</a>
                 </td>
             </tr>
         }
+
     </tbody>
 </table>

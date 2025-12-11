@@ -18,12 +18,16 @@ namespace SaborSoft2.Pages.Inventarios
         [BindProperty]
         public Inventario Inventario { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int? codigo, int? codigoMenu)
         {
-            if (id == null)
+            if (codigo == null || codigoMenu == null)
                 return NotFound();
 
-            var inv = await _context.Inventarios.FirstOrDefaultAsync(i => i.Codigo == id);
+            var inv = await _context.Inventarios
+                .AsNoTracking()
+                .FirstOrDefaultAsync(i =>
+                    i.Codigo == codigo &&
+                    i.CodigoMenu == codigoMenu);
 
             if (inv == null)
                 return NotFound();
@@ -32,22 +36,23 @@ namespace SaborSoft2.Pages.Inventarios
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int? id)
+        public async Task<IActionResult> OnPostAsync(int? codigo, int? codigoMenu)
         {
-            if (id == null)
+            if (codigo == null || codigoMenu == null)
                 return NotFound();
 
-            var inv = await _context.Inventarios.FindAsync(id);
+            var inv = await _context.Inventarios
+                .FirstOrDefaultAsync(i =>
+                    i.Codigo == codigo &&
+                    i.CodigoMenu == codigoMenu);
 
             if (inv != null)
             {
-                // Aquí se podría registrar en una tabla de auditoría
                 _context.Inventarios.Remove(inv);
                 await _context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = "Ingrediente eliminado correctamente del inventario.";
             }
-
             return RedirectToPage("Index");
         }
     }
