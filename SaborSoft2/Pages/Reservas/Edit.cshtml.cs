@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -12,9 +11,9 @@ namespace SaborSoft2.Pages.Reservas
 {
     public class EditModel : PageModel
     {
-        private readonly SaborSoft2.Models.SaborCriolloContext _context;
+        private readonly SaborCriolloContext _context;
 
-        public EditModel(SaborSoft2.Models.SaborCriolloContext context)
+        public EditModel(SaborCriolloContext context)
         {
             _context = context;
         }
@@ -22,57 +21,147 @@ namespace SaborSoft2.Pages.Reservas
         [BindProperty]
         public Reserva Reserva { get; set; } = default!;
 
+        [BindProperty]
+        public int? MesaCodigo { get; set; }
+
+        [BindProperty]
+        public int? DisponibilidadId { get; set; }
+
+        public SelectList TiposReservaSelectList { get; set; } = default!;
+        public SelectList MesasSelectList { get; set; } = default!;
+        public SelectList DisponibilidadesSelectList { get; set; } = default!;
+
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var reserva =  await _context.Reservas.FirstOrDefaultAsync(m => m.Codigo == id);
-            if (reserva == null)
-            {
+            Reserva = await _context.Reservas
+                .Include(r => r.Mesas)
+                .FirstOrDefaultAsync(r => r.Codigo == id);
+
+            if (Reserva == null)
                 return NotFound();
-            }
-            Reserva = reserva;
-           ViewData["Cedula"] = new SelectList(_context.Usuarios, "Cedula", "Cedula");
-           ViewData["TipoReservaId"] = new SelectList(_context.TipoReservas, "TipoReservaId", "TipoReservaId");
+
+            var mesa = Reserva.Mesas.FirstOrDefault();
+            MesaCodigo = mesa?.Codigo;
+            DisponibilidadId = mesa?.DisponibilidadId;
+
+            await CargarCombosAsync();
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more information, see https://aka.ms/RazorPagesCRUD.
-        public async Task<IActionResult> OnPostAsync()
+        private async Task CargarCombosAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            TiposReservaSelectList = new SelectList(
+                await _context.TipoReservas
+                    .OrderBy(t => t.TipoReserva1)
+                    .ToListAsync(),
+                "TipoReservaId",
+                "TipoReserva1",
+                Reserva.TipoReservaId);
 
-            _context.Attach(Reserva).State = EntityState.Modified;
+            var todasLasMesas = Enumerable.Range(1, 10).ToList();
+            MesasSelectList = new SelectList(todasLasMesas, MesaCodigo);
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ReservaExists(Reserva.Codigo))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return RedirectToPage("./Index");
+            DisponibilidadesSelectList = new SelectList(
+                await _context.Disponibilidads
+                    .OrderBy(d => d.Disponibilidad1)
+                    .ToListAsync(),
+                "DisponibilidadId",
+                "DisponibilidadId",
+                DisponibilidadId);
         }
 
-        private bool ReservaExists(int id)
+        public async Task<IActionResult> OnPostAsync()
         {
-            return _context.Reservas.Any(e => e.Codigo == id);
+            await CargarCombosAsync();
+
+            // Quitar navegaciones/código de la validación automática
+            ModelState.Remove("Reserva.CedulaNavigation");
+            ModelState.Remove("Reserva.TipoReserva");
+            ModelState.Remove("Reserva.Mesas");
+            ModelState.Remove("Reserva.FacturaReserva");
+            ModelState.Remove("Reserva.CodigoUnico");
+
+            if (Reserva.Fecha.ToDateTime(TimeOnly.MinValue) < DateTime.Today)
+                ModelState.AddModelError("Reserva.Fecha", "La fecha debe ser hoy o una fecha futura.");
+
+            if (Reserva.Cantidad <= 0)
+                ModelState.AddModelError("Reserva.Cantidad", "La cantidad de personas debe ser mayor que cero.");
+
+            if (Reserva.TipoReservaId == 0)
+                ModelState.AddModelError("Reserva.TipoReservaId", "Seleccione un tipo de reserva.");
+
+            if (!MesaCodigo.HasValue)
+                ModelState.AddModelError(nameof(MesaCodigo), "Seleccione una mesa.");
+
+            if (!DisponibilidadId.HasValue)
+                ModelState.AddModelError(nameof(DisponibilidadId), "Seleccione un horario.");
+
+            // una reserva por cédula y fecha, excluyendo la actual
+            bool yaTiene = await _context.Reservas
+                .AnyAsync(r => r.Cedula == Reserva.Cedula &&
+                               r.Fecha == Reserva.Fecha &&
+                               r.Codigo != Reserva.Codigo);
+
+            if (yaTiene)
+                ModelState.AddModelError(string.Empty,
+                    "Esta cédula ya tiene otra reserva en la fecha seleccionada.");
+
+            // mesa libre, excluyendo la mesa actual de esta reserva
+            if (MesaCodigo.HasValue && DisponibilidadId.HasValue)
+            {
+                bool mesaOcupada = await _context.Mesas
+                    .Include(m => m.CodigoReservaNavigation)
+                    .AnyAsync(m =>
+                        m.Codigo == MesaCodigo.Value &&
+                        m.DisponibilidadId == DisponibilidadId.Value &&
+                        m.CodigoReservaNavigation.Fecha == Reserva.Fecha &&
+                        m.CodigoReserva != Reserva.Codigo);
+
+                if (mesaOcupada)
+                    ModelState.AddModelError(string.Empty,
+                        "La mesa seleccionada ya está reservada en ese horario para esa fecha.");
+            }
+
+            if (!ModelState.IsValid)
+                return Page();
+
+            var reservaDb = await _context.Reservas
+                .Include(r => r.Mesas)
+                .FirstOrDefaultAsync(r => r.Codigo == Reserva.Codigo);
+
+            if (reservaDb == null)
+                return NotFound();
+
+            // actualizar datos principales
+            reservaDb.Fecha = Reserva.Fecha;
+            reservaDb.Cantidad = Reserva.Cantidad;
+            reservaDb.TipoReservaId = Reserva.TipoReservaId;
+            reservaDb.Cedula = Reserva.Cedula;
+
+            // actualizar mesa
+            var mesa = reservaDb.Mesas.FirstOrDefault();
+            if (mesa != null)
+            {
+                mesa.Codigo = MesaCodigo!.Value;
+                mesa.DisponibilidadId = DisponibilidadId!.Value;
+                mesa.Cantidad = Reserva.Cantidad;
+            }
+            else
+            {
+                reservaDb.Mesas.Add(new Mesa
+                {
+                    Codigo = MesaCodigo!.Value,
+                    CodigoReserva = reservaDb.Codigo,
+                    Cantidad = reservaDb.Cantidad,
+                    DisponibilidadId = DisponibilidadId!.Value
+                });
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToPage("Index");
         }
     }
 }

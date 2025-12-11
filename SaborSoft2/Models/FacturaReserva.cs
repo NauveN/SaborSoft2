@@ -23,10 +23,6 @@ public partial class FacturaReserva
 
     public int Cantidad { get; set; }
 
-    [ForeignKey("CodigoMesa")]
-    [InverseProperty("FacturaReservas")]
-    public virtual Mesa CodigoMesaNavigation { get; set; } = null!;
-
     [ForeignKey("CodigoReserva")]
     [InverseProperty("FacturaReserva")]
     public virtual Reserva CodigoReservaNavigation { get; set; } = null!;

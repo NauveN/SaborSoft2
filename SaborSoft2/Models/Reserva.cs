@@ -8,6 +8,7 @@ namespace SaborSoft2.Models;
 
 [Table("Reserva")]
 [Index("Cedula", "Fecha", Name = "UQ_Reserva_Cedula_Fecha", IsUnique = true)]
+[Index("CodigoUnico", Name = "UQ_Reserva_Codigo_unico", IsUnique = true)]
 public partial class Reserva
 {
     [Key]
@@ -22,6 +23,10 @@ public partial class Reserva
 
     [Column("Tipo_reserva_ID")]
     public int TipoReservaId { get; set; }
+
+    [Column("Codigo_unico")]
+    [StringLength(6)]
+    public string CodigoUnico { get; set; } = null!;
 
     [ForeignKey("Cedula")]
     [InverseProperty("Reservas")]

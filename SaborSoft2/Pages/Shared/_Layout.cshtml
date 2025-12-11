@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - SaborSoft2</title>
+    <title>@ViewData["Title"] - Sabor Criollo</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SaborSoft2.styles.css" asp-append-version="true" />
@@ -20,19 +20,33 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="" asp-page="/Index">Inicio</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-page="/Reservas/Create">Reservar mesa</a>
                         </li>
+
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-page="/Reservas/Index">Reservas</a>
+                            <a class="nav-link text-dark" asp-page="/Reservas/Index">Gestión de reservas</a>
                         </li>
+
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-page="/Usuarios/Index">Usuarios</a>
                         </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" data-bs-toggle="dropdown">Inventario</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-page="/Inventarios/Index">Consultar inventario</a></li>
+                                <li><a class="dropdown-item" asp-page="/Inventarios/Create">Registrar inventario</a></li>
+                                <li><a class="dropdown-item" asp-page="/Inventarios/Alertas">Alertas</a></li>
+                            </ul>
+                        </li>
+
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-page="/Menus/Index">Menú</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-page="/Mesas/Index">Mesas</a>
                         </li>
 
                     </ul>

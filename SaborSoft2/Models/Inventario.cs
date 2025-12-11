@@ -25,6 +25,19 @@ public partial class Inventario
 
     public int Stock { get; set; }
 
+    [Column("Unidad_medida")]
+    [StringLength(20)]
+    public string UnidadMedida { get; set; } = null!;
+
+    [Column("Fecha_adquisicion")]
+    public DateOnly FechaAdquisicion { get; set; }
+
+    [Column("Stock_minimo")]
+    public int StockMinimo { get; set; }
+
+    [Column("Fecha_actualizacion", TypeName = "datetime")]
+    public DateTime? FechaActualizacion { get; set; }
+
     [ForeignKey("Cedula")]
     [InverseProperty("Inventarios")]
     public virtual Usuario CedulaNavigation { get; set; } = null!;

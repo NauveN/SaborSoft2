@@ -53,12 +53,6 @@ public partial class SaborCriolloContext : DbContext
             entity.Property(e => e.CodigoReserva).ValueGeneratedNever();
             entity.Property(e => e.Fecha).HasDefaultValueSql("(sysdatetime())");
 
-            entity.HasOne(d => d.CodigoMesaNavigation).WithMany(p => p.FacturaReservas)
-                .HasPrincipalKey(p => p.Codigo)
-                .HasForeignKey(d => d.CodigoMesa)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_FacturaReserva_Mesa");
-
             entity.HasOne(d => d.CodigoReservaNavigation).WithOne(p => p.FacturaReserva)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_FacturaReserva_Reserva");
@@ -70,6 +64,9 @@ public partial class SaborCriolloContext : DbContext
 
         modelBuilder.Entity<Inventario>(entity =>
         {
+            entity.Property(e => e.FechaAdquisicion).HasDefaultValueSql("(CONVERT([date],getdate()))");
+            entity.Property(e => e.UnidadMedida).HasDefaultValue("Unidad");
+
             entity.HasOne(d => d.CedulaNavigation).WithMany(p => p.Inventarios)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Inventario_Usuario");
@@ -103,6 +100,8 @@ public partial class SaborCriolloContext : DbContext
         modelBuilder.Entity<Reserva>(entity =>
         {
             entity.HasKey(e => e.Codigo).HasName("PK__Reserva__06370DAD6FC7F461");
+
+            entity.Property(e => e.CodigoUnico).HasDefaultValue("");
 
             entity.HasOne(d => d.CedulaNavigation).WithMany(p => p.Reservas)
                 .OnDelete(DeleteBehavior.ClientSetNull)

@@ -1,0 +1,47 @@
+﻿@page
+@model SaborSoft2.Pages.Inventarios.AlertasModel
+
+@{
+    ViewData["Title"] = "Alertas de inventario";
+}
+
+<h1 class="mb-3">Alertas de inventario</h1>
+
+@if (!Model.IngredientesConAlerta.Any())
+{
+    <div class="alert alert-success">
+        No hay alertas activas. Todos los ingredientes están sobre su stock mínimo.
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">
+        Existen @Model.IngredientesConAlerta.Count ingrediente(s) con stock por debajo del mínimo.
+    </div>
+
+    <table class="table table-bordered align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Ingrediente</th>
+                <th>Cantidad</th>
+                <th>Unidad</th>
+                <th>Stock mínimo</th>
+                <th>Fecha adquisición</th>
+                <th>Última actualización</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var i in Model.IngredientesConAlerta)
+            {
+                <tr>
+                    <td>@i.Descripcion</td>
+                    <td>@i.Stock</td>
+                    <td>@i.UnidadMedida</td>
+                    <td>@i.StockMinimo</td>
+                    <td>@i.FechaAdquisicion.ToString("dd/MM/yyyy")</td>
+                    <td>@i.FechaActualizacion?.ToString("dd/MM/yyyy HH:mm")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

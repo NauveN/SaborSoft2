@@ -1,51 +1,75 @@
-﻿@page
+﻿@page "{id:int}"
 @model SaborSoft2.Pages.Reservas.EditModel
 
 @{
-    ViewData["Title"] = "Edit";
-    Layout = "_Layout";
+    ViewData["Title"] = "Actualizar reserva";
 }
 
-<h1>Edit</h1>
+<h1 class="mb-3">Actualizar reserva</h1>
 
-<h4>Reserva</h4>
-<hr />
 <div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Reserva.Codigo" />
-            <div class="form-group">
-                <label asp-for="Reserva.Cedula" class="control-label"></label>
-                <select asp-for="Reserva.Cedula" class="form-control" asp-items="ViewBag.Cedula" ></select>
-                <span asp-validation-for="Reserva.Cedula" class="text-danger"></span>
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form method="post">
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                    <input type="hidden" asp-for="Reserva.Codigo" />
+
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label asp-for="Reserva.Cedula" class="form-label">Cédula</label>
+                            <input asp-for="Reserva.Cedula" class="form-control" />
+                            <span asp-validation-for="Reserva.Cedula" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Reserva.Fecha" class="form-label">Fecha</label>
+                            <input asp-for="Reserva.Fecha" class="form-control" type="date" />
+                            <span asp-validation-for="Reserva.Fecha" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Reserva.Cantidad" class="form-label">Personas</label>
+                            <input asp-for="Reserva.Cantidad" class="form-control" />
+                            <span asp-validation-for="Reserva.Cantidad" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Reserva.TipoReservaId" class="form-label">Tipo de reserva</label>
+                            <select asp-for="Reserva.TipoReservaId" class="form-select"
+                                    asp-items="Model.TiposReservaSelectList">
+                                <option value="">-- Seleccione tipo de reserva --</option>
+                            </select>
+                            <span asp-validation-for="Reserva.TipoReservaId" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label asp-for="MesaCodigo" class="form-label">Mesa</label>
+                            <select asp-for="MesaCodigo" class="form-select"
+                                    asp-items="Model.MesasSelectList">
+                                <option value="">-- Seleccione mesa --</option>
+                            </select>
+                            <span asp-validation-for="MesaCodigo" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label asp-for="DisponibilidadId" class="form-label">Horario</label>
+                            <select asp-for="DisponibilidadId" class="form-select"
+                                    asp-items="Model.DisponibilidadesSelectList">
+                                <option value="">-- Seleccione horario --</option>
+                            </select>
+                            <span asp-validation-for="DisponibilidadId" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex justify-content-between">
+                        <a asp-page="Index" class="btn btn-outline-secondary">Volver al listado</a>
+                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label asp-for="Reserva.Fecha" class="control-label"></label>
-                <input asp-for="Reserva.Fecha" class="form-control" />
-                <span asp-validation-for="Reserva.Fecha" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Reserva.Cantidad" class="control-label"></label>
-                <input asp-for="Reserva.Cantidad" class="form-control" />
-                <span asp-validation-for="Reserva.Cantidad" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Reserva.TipoReservaId" class="control-label"></label>
-                <select asp-for="Reserva.TipoReservaId" class="form-control" asp-items="ViewBag.TipoReservaId" ></select>
-                <span asp-validation-for="Reserva.TipoReservaId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-page="./Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <partial name="_ValidationScriptsPartial" />
 }

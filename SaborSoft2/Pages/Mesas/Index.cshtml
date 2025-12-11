@@ -2,48 +2,54 @@
 @model SaborSoft2.Pages.Mesas.IndexModel
 
 @{
-    ViewData["Title"] = "Index";
-    Layout = "_Layout";
+    ViewData["Title"] = "Estado de mesas";
 }
 
-<h1>Index</h1>
+<h1 class="mb-3">Estado de mesas</h1>
 
-<p>
-    <a asp-page="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Mesa[0].Cantidad)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Mesa[0].CodigoReservaNavigation)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Mesa[0].Disponibilidad)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model.Mesa) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Cantidad)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CodigoReservaNavigation.Codigo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Disponibilidad.DisponibilidadId)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label asp-for="FechaFiltro" class="form-label">Fecha</label>
+                <input asp-for="FechaFiltro" class="form-control" type="date"
+                       value="@Model.FechaFiltro?.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">Ver ocupación</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @foreach (var mesa in Model.Mesas)
+    {
+        string badgeClass = mesa.Estado switch
+        {
+            "Libre" => "bg-success",
+            "Reservada" => "bg-warning text-dark",
+            "Ocupada" => "bg-danger",
+            _ => "bg-secondary"
+        };
+
+        <div class="col">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        Mesa @mesa.CodigoMesa
+                        <span class="badge @badgeClass ms-2">@mesa.Estado</span>
+                    </h5>
+                    @if (!string.IsNullOrWhiteSpace(mesa.Horarios))
+                    {
+                        <p class="card-text mb-1"><strong>Horarios:</strong> @mesa.Horarios</p>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(mesa.Clientes))
+                    {
+                        <p class="card-text mb-0"><strong>Clientes:</strong> @mesa.Clientes</p>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

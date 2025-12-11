@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using SaborSoft2;
 using SaborSoft2.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +11,11 @@ builder.Services.AddDbContext<SaborCriolloContext>(options =>
 // Razor Pages
 builder.Services.AddRazorPages();
 
+
+
 var app = builder.Build();
+
+SeedData.Initialize(app.Services);
 
 if (!app.Environment.IsDevelopment())
 {

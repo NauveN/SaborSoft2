@@ -8,7 +8,6 @@ namespace SaborSoft2.Models;
 
 [PrimaryKey("Codigo", "CodigoReserva")]
 [Table("Mesa")]
-[Index("Codigo", Name = "UQ_Mesa_Codigo", IsUnique = true)]
 public partial class Mesa
 {
     [Key]
@@ -30,7 +29,4 @@ public partial class Mesa
     [ForeignKey("DisponibilidadId")]
     [InverseProperty("Mesas")]
     public virtual Disponibilidad Disponibilidad { get; set; } = null!;
-
-    [InverseProperty("CodigoMesaNavigation")]
-    public virtual ICollection<FacturaReserva> FacturaReservas { get; set; } = new List<FacturaReserva>();
 }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -11,9 +8,9 @@ namespace SaborSoft2.Pages.Reservas
 {
     public class DetailsModel : PageModel
     {
-        private readonly SaborSoft2.Models.SaborCriolloContext _context;
+        private readonly SaborCriolloContext _context;
 
-        public DetailsModel(SaborSoft2.Models.SaborCriolloContext context)
+        public DetailsModel(SaborCriolloContext context)
         {
             _context = context;
         }
@@ -23,19 +20,18 @@ namespace SaborSoft2.Pages.Reservas
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
-            var reserva = await _context.Reservas.FirstOrDefaultAsync(m => m.Codigo == id);
-            if (reserva == null)
-            {
+            Reserva = await _context.Reservas
+                .Include(r => r.CedulaNavigation)
+                .Include(r => r.TipoReserva)
+                .Include(r => r.Mesas)
+                    .ThenInclude(m => m.Disponibilidad)
+                .FirstOrDefaultAsync(m => m.Codigo == id);
+
+            if (Reserva == null)
                 return NotFound();
-            }
-            else
-            {
-                Reserva = reserva;
-            }
+
             return Page();
         }
     }
